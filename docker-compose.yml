@@ -1,0 +1,14 @@
+services:
+  build:
+    build:
+      context: .
+      args:
+        LOVE_VERSION: "11.5"
+        GAME_NAME: "game"
+    user: "${UID:-1000}:${GID:-1000}"
+    environment:
+      LOVE_VERSION: "11.5"
+      GAME_NAME: "game"
+    volumes:
+      - ./src:/game/src:ro
+      - ./build:/game/build
