@@ -16,7 +16,9 @@ jobs:
       - name: Build game binaries
         run: |
           mkdir -p build
-          UID=$(id -u) GID=$(id -g) docker compose run --rm build
+          export DOCKER_UID=$(id -u)
+          export DOCKER_GID=$(id -g)
+          docker compose run --rm -u "$DOCKER_UID:$DOCKER_GID" build
 
       - name: Package release artifacts
         run: |
