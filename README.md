@@ -4,9 +4,16 @@ A parody survivalcraft game built with [Love2D](https://love2d.org/). This is a 
 
 Harvest Blockchain Ore Nodes, chop down Organic Free-Range Trees, and collect Cosmetic Flowers (DLC) in this Parody Survivalcraft Experience from the visionary team that brought you nothing.
 
-## Running
+## Download & Play
 
-Grab a build from the [Releases](https://github.com/cwage/game/releases) page, or run from source with Love2D installed:
+Pre-built binaries are available on the [Releases](https://github.com/cwage/game/releases) page:
+
+- **Windows** — Download `game-win64.zip`, extract, and run `game.exe`
+- **Linux** — Download `game-linux-x86_64.AppImage`, `chmod +x`, and run it
+- **macOS** — Download `game-macos.zip`, extract, and run the `.app` bundle
+- **Love2D** — Download `game.love` and run with `love game.love`
+
+Or run from source with Love2D installed:
 
 ```
 cd src && love .
