@@ -53,8 +53,30 @@ mkdir -p "$LINUX_DIR"
 APPIMAGE_SRC="${LOVE_DIR}/linux/love-${LOVE_VERSION}-x86_64.AppImage"
 APPIMAGE_OUT="${LINUX_DIR}/${GAME_NAME}-linux-x86_64.AppImage"
 
-cat "$APPIMAGE_SRC" "$LOVE_FILE" > "$APPIMAGE_OUT"
+# Extract AppImage, embed .love, repack
+APPIMAGE_WORK="${BUILD_DIR}/_appimage_work"
+rm -rf "$APPIMAGE_WORK"
+mkdir -p "$APPIMAGE_WORK"
+
+# Find squashfs offset (use last 'hsqs' match — first may be inside ELF binary)
+OFFSET=$(grep -aob 'hsqs' "$APPIMAGE_SRC" | tail -1 | cut -d: -f1)
+dd if="$APPIMAGE_SRC" bs=1 count="$OFFSET" of="${APPIMAGE_WORK}/runtime" 2>/dev/null
+dd if="$APPIMAGE_SRC" bs=1 skip="$OFFSET" of="${APPIMAGE_WORK}/squashfs.img" 2>/dev/null
+unsquashfs -d "${APPIMAGE_WORK}/squashfs-root" "${APPIMAGE_WORK}/squashfs.img"
+
+# Place the .love file inside the AppImage
+cp "$LOVE_FILE" "${APPIMAGE_WORK}/squashfs-root/${GAME_NAME}.love"
+
+# Enable the built-in FUSE_PATH in AppRun
+sed -i "s|^#FUSE_PATH=\"\$APPDIR/my_game.love\"|FUSE_PATH=\"\$APPDIR/${GAME_NAME}.love\"|" \
+    "${APPIMAGE_WORK}/squashfs-root/AppRun"
+
+# Repack: runtime header + new squashfs
+mksquashfs "${APPIMAGE_WORK}/squashfs-root" "${APPIMAGE_WORK}/new.squashfs" \
+    -root-owned -noappend -comp gzip -no-progress
+cat "${APPIMAGE_WORK}/runtime" "${APPIMAGE_WORK}/new.squashfs" > "$APPIMAGE_OUT"
 chmod +x "$APPIMAGE_OUT"
+rm -rf "$APPIMAGE_WORK"
 
 # --- Done ---
 echo ""

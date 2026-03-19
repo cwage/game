@@ -9,6 +9,7 @@ RUN apt-get update && \
         unzip \
         curl \
         ca-certificates \
+        squashfs-tools \
     && rm -rf /var/lib/apt/lists/*
 
 # Download and cache Love2D binaries for all platforms
